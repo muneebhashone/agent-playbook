@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #edf1f5;
+  --sheet: #f8fafc;
+  --ink: #15233f;
+  --line: #3c6fa6;
+  --muted: #5d6f8a;
+  --rule: #c9d4e1;
+  --mark: #f3c63f;
+  --mark-ink: #15233f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0f1a2e;
+    --sheet: #15223a;
+    --ink: #e4ebf4;
+    --line: #8db4df;
+    --muted: #9aabc3;
+    --rule: #2a3a57;
+    --mark: #f3c63f;
+    --mark-ink: #15233f;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-sheet: var(--sheet);
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-mark: var(--mark);
+  --color-mark-ink: var(--mark-ink);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-code: var(--font-code);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  /* Drafting-paper grid: faint enough to read over, present enough to set the tone. */
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 7%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+
+/* Highlighter stroke for the points worth remembering if you read nothing else. */
+.mark {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 55%,
+    color-mix(in srgb, var(--mark) 70%, transparent) 55%,
+    color-mix(in srgb, var(--mark) 70%, transparent) 92%,
+    transparent 92%
+  );
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mark {
+    background-image: linear-gradient(
+      to bottom,
+      transparent 55%,
+      color-mix(in srgb, var(--mark) 35%, transparent) 55%,
+      color-mix(in srgb, var(--mark) 35%, transparent) 92%,
+      transparent 92%
+    );
+  }
+}
+
+/* Show file contents exactly as they will be pasted: no `<!--` or `-->` ligatures. */
+pre,
+code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
 }
