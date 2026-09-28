@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { buildShortPrompt, promptTargets, setupUrl, type PromptTarget } from "@/content/agent-prompt";
+import { buildShortPrompt, promptTargets, setupUrl, skillsUrl, type PromptTarget } from "@/content/agent-prompt";
+import { skillPacks } from "@/content/skills";
 import { CopyButton } from "./copy-button";
 
 export function AgentPromptCard({ siteUrl, version }: { siteUrl: string; version: string }) {
   const [target, setTarget] = useState<PromptTarget>("claude");
-  const prompt = buildShortPrompt(siteUrl, target);
+  const [skills, setSkills] = useState<string[]>([]);
+  const prompt = buildShortPrompt(siteUrl, target, skills);
+  const toggleSkill = (id: string, on: boolean) =>
+    setSkills((s) => (on ? [...s, id] : s.filter((x) => x !== id)));
   const docUrl = setupUrl(siteUrl, target);
 
   return (
@@ -34,6 +38,28 @@ export function AgentPromptCard({ siteUrl, version }: { siteUrl: string; version
           ))}
         </div>
         <p className="mt-2 text-xs text-muted">{promptTargets.find((t) => t.id === target)?.note}</p>
+
+        <fieldset className="mt-3">
+          <legend className="text-sm font-medium">Also install skill packs (optional)</legend>
+          <div className="mt-1.5 space-y-1.5">
+            {skillPacks.map((p) => (
+              <label key={p.id} className="flex cursor-pointer items-start gap-2.5 text-sm">
+                <input
+                  type="checkbox"
+                  checked={skills.includes(p.id)}
+                  onChange={(e) => toggleSkill(p.id, e.target.checked)}
+                  className="mt-1 accent-[var(--line)]"
+                />
+                <span>
+                  <a href={p.repo} target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
+                    {p.name}
+                  </a>
+                  <span className="block text-muted">{p.about}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
       <pre className="px-4 py-4 font-code text-[0.85rem] leading-relaxed break-words whitespace-pre-wrap">{prompt}</pre>
@@ -50,7 +76,16 @@ export function AgentPromptCard({ siteUrl, version }: { siteUrl: string; version
           <a href={docUrl} target="_blank" rel="noreferrer" className="text-line underline underline-offset-2">
             See what it fetches
           </a>{" "}
-          (version {version}).
+          (version {version})
+          {skills.length > 0 && (
+            <>
+              {" "}and{" "}
+              <a href={skillsUrl(siteUrl)} target="_blank" rel="noreferrer" className="text-line underline underline-offset-2">
+                the skill install steps
+              </a>
+            </>
+          )}
+          .
         </p>
       </div>
     </div>

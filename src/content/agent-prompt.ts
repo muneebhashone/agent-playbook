@@ -1,5 +1,6 @@
 import { ruleGroups, type Target } from "./rules";
 import { PLAYBOOK_VERSION } from "./site";
+import { skillPacks } from "./skills";
 
 export type PromptTarget = "claude" | "codex" | "both";
 
@@ -9,8 +10,14 @@ export const setupFiles: Record<PromptTarget, string> = {
   both: "both.md",
 };
 
+export const skillsFile = "skills.md";
+
 export function setupUrl(siteUrl: string, target: PromptTarget): string {
   return `${siteUrl}/setup/${setupFiles[target]}`;
+}
+
+export function skillsUrl(siteUrl: string): string {
+  return `${siteUrl}/setup/${skillsFile}`;
 }
 
 const writtenFile: Record<PromptTarget, string> = {
@@ -19,9 +26,18 @@ const writtenFile: Record<PromptTarget, string> = {
   both: "AGENTS.md and CLAUDE.md",
 };
 
+const agentName: Record<PromptTarget, string> = {
+  claude: "Claude Code",
+  codex: "Codex",
+  both: "Claude Code and Codex",
+};
+
 /** What the builder copies: one line that pulls the current instructions from the hosted site. */
-export function buildShortPrompt(siteUrl: string, target: PromptTarget): string {
-  return `Run \`curl -fsSL ${setupUrl(siteUrl, target)}\` and follow the instructions it returns to write or update this project's ${writtenFile[target]}.`;
+export function buildShortPrompt(siteUrl: string, target: PromptTarget, skillIds: string[] = []): string {
+  const base = `Run \`curl -fsSL ${setupUrl(siteUrl, target)}\` and follow the instructions it returns to write or update this project's ${writtenFile[target]}.`;
+  const ids = skillPacks.filter((p) => skillIds.includes(p.id)).map((p) => p.id);
+  if (!ids.length) return base;
+  return `${base} Then run \`curl -fsSL ${skillsUrl(siteUrl)}\` and install only these skill packs for ${agentName[target]}: ${ids.join(", ")}.`;
 }
 
 export const promptTargets: { id: PromptTarget; label: string; note: string }[] = [
@@ -90,5 +106,36 @@ ${library}
 - Every command in it exists, and the ones you ran worked.
 - No other files were changed.
 - You end with three headings: **Blocked on me** (anything you couldn't determine), **Changed**, and **Found** (gotchas you noticed but weren't sure enough to include).
+`;
+}
+
+/** Hosted install steps for the opt-in skill packs. The short prompt names which ones to install. */
+export function buildSkillsDoc(): string {
+  const packs = skillPacks
+    .map((p) => {
+      const block = (label: string, cmds: string[], after?: string) =>
+        [`**${label}**`, "", "```bash", ...cmds, "```", ...(after ? ["", `Then, for me: ${after}`] : [])].join("\n");
+      return [
+        `## ${p.id}: ${p.name}`,
+        "",
+        `${p.about} Source: ${p.repo}`,
+        "",
+        block("Claude Code", p.claude, p.afterInstall?.claude),
+        "",
+        block("Codex", p.codex, p.afterInstall?.codex),
+      ].join("\n");
+    })
+    .join("\n\n");
+
+  return `# Agent Playbook skill packs (version ${PLAYBOOK_VERSION})
+
+I opted into some of the skill packs below; my prompt names them by id and says which agent to install them for. Install only those. Don't install anything else, even if it looks useful.
+
+- Run the commands for each named pack exactly as written, in order, from the repository root. Claude Code installs use project scope, so they write to \`.claude/settings.json\`; that change is expected. Codex installs are user-level.
+- If a command fails, don't try another source or a copied install script. Report the error and tell me the in-app fallback: \`/plugin install <name>\` in Claude Code, or \`/plugins\` and search in Codex.
+- Plugins load when a session starts, so tell me to restart the agent after installing.
+- Report what you installed under **Changed**, and each "Then, for me" step plus the restart under **Blocked on me**.
+
+${packs}
 `;
 }
