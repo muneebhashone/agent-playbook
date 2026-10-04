@@ -88,7 +88,7 @@ export function RulesBuilder() {
     <div className="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <div className="space-y-8">
         <fieldset>
-          <legend className="mb-3 font-display text-lg font-semibold">Which agent reads it?</legend>
+          <legend className="mb-3 font-mono text-sm text-ink">Which agent reads it?</legend>
           <div role="radiogroup" className="grid grid-cols-2 gap-2">
             {(["claude", "agents"] as Target[]).map((t) => (
               <button
@@ -97,12 +97,12 @@ export function RulesBuilder() {
                 role="radio"
                 aria-checked={target === t}
                 onClick={() => setTarget(t)}
-                className={`rounded-[3px] border px-3 py-2.5 text-left transition-colors ${
-                  target === t ? "border-ink bg-ink text-paper" : "border-rule bg-sheet hover:border-line"
+                className={`rounded-md border px-3 py-2.5 text-left transition-colors ${
+                  target === t ? "border-kw bg-panel" : "border-rule hover:border-comment"
                 }`}
               >
-                <span className="block font-semibold">{fileName[t]}</span>
-                <span className={`block text-sm ${target === t ? "opacity-80" : "text-muted"}`}>
+                <span className="block font-mono text-sm">{fileName[t]}</span>
+                <span className={"block text-sm text-comment"}>
                   {t === "claude" ? "Claude Code" : "Codex, and most other agents"}
                 </span>
               </button>
@@ -114,11 +114,11 @@ export function RulesBuilder() {
                 type="checkbox"
                 checked={shareAgents}
                 onChange={(e) => setShareAgents(e.target.checked)}
-                className="mt-1 accent-[var(--line)]"
+                className="mt-1 accent-[var(--kw)]"
               />
               <span>
                 I also use Codex. Keep the rules in AGENTS.md and have CLAUDE.md import it.
-                <span className="block text-muted">
+                <span className="block text-comment">
                   Claude Code skips AGENTS.md when a CLAUDE.md exists, so the import keeps one source of truth.
                 </span>
               </span>
@@ -127,8 +127,8 @@ export function RulesBuilder() {
         </fieldset>
 
         <fieldset disabled={sharing} className={sharing ? "opacity-45" : undefined}>
-          <legend className="mb-1 font-display text-lg font-semibold">Your project</legend>
-          <p className="mb-3 text-sm text-muted">
+          <legend className="mb-1 font-mono text-sm text-ink">Your project</legend>
+          <p className="mb-3 text-sm text-comment">
             Optional, but this is the part that helps most. Empty fields become comments that tell you what to fill in.
           </p>
           <div className="space-y-3">
@@ -140,7 +140,7 @@ export function RulesBuilder() {
                     value={project[f.key]}
                     onChange={(e) => setProject({ ...project, [f.key]: e.target.value })}
                     placeholder={f.hint}
-                    className="w-full rounded-[3px] border border-rule bg-sheet px-3 py-2 text-[0.95rem] placeholder:text-muted/60 focus:border-line focus:outline-none"
+                    className="w-full rounded-md border border-rule bg-panel px-3 py-2 font-mono text-[0.85rem] placeholder:text-comment/50 focus:border-kw focus:outline-none"
                   />
                 ) : (
                   <textarea
@@ -148,7 +148,7 @@ export function RulesBuilder() {
                     onChange={(e) => setProject({ ...project, [f.key]: e.target.value })}
                     placeholder={f.hint}
                     rows={f.rows}
-                    className="w-full resize-y rounded-[3px] border border-rule bg-sheet px-3 py-2 text-[0.95rem] placeholder:text-muted/60 focus:border-line focus:outline-none"
+                    className="w-full resize-y rounded-md border border-rule bg-panel px-3 py-2 font-mono text-[0.85rem] placeholder:text-comment/50 focus:border-kw focus:outline-none"
                   />
                 )}
               </label>
@@ -157,8 +157,8 @@ export function RulesBuilder() {
         </fieldset>
 
         <fieldset disabled={sharing} className={sharing ? "opacity-45" : undefined}>
-          <legend className="mb-1 font-display text-lg font-semibold">Rules to include</legend>
-          <p className="mb-3 text-sm text-muted">Every rule is quoted or closely adapted from the sources. Include only what you need.</p>
+          <legend className="mb-1 font-mono text-sm text-ink">Rules to include</legend>
+          <p className="mb-3 text-sm text-comment">Every rule is quoted or closely adapted from the sources. Include only what you need.</p>
           <div className="divide-y divide-rule border-y border-rule">
             {ruleGroups.map((g) => (
               <label key={g.id} className="flex cursor-pointer items-start gap-3 py-2.5">
@@ -166,13 +166,13 @@ export function RulesBuilder() {
                   type="checkbox"
                   checked={groups.includes(g.id)}
                   onChange={() => toggle(g.id)}
-                  className="mt-1.5 accent-[var(--line)]"
+                  className="mt-1.5 accent-[var(--kw)]"
                 />
                 <span>
                   <span className="block font-medium">
-                    {g.heading} <span className="font-normal text-muted">({g.rules.filter((r) => !r.only || r.only === target).length})</span>
+                    {g.heading} <span className="font-normal text-comment">({g.rules.filter((r) => !r.only || r.only === target).length})</span>
                   </span>
-                  <span className="block text-sm text-muted">{g.summary}</span>
+                  <span className="block text-sm text-comment">{g.summary}</span>
                 </span>
               </label>
             ))}
@@ -180,39 +180,39 @@ export function RulesBuilder() {
         </fieldset>
       </div>
 
-      <div className="lg:sticky lg:top-20 lg:self-start">
-        <div className="overflow-hidden rounded-[4px] border border-ink/80 bg-sheet shadow-[6px_6px_0_0_var(--line)]">
+      <div className="lg:sticky lg:top-6 lg:self-start">
+        <div className="overflow-hidden rounded-lg border border-rule bg-panel">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule px-4 py-2.5">
-            <span className="font-semibold">{fileName[target]}</span>
+            <span className="font-mono text-sm">{fileName[target]}</span>
             <span className="flex items-center gap-2">
-              <span className={`text-sm ${lineCount > 200 ? "font-semibold text-red-600" : "text-muted"}`}>
+              <span className={`text-sm ${lineCount > 200 ? "font-semibold text-cursor" : "text-comment"}`}>
                 {lineCount} lines{lineCount > 200 ? ", over the 200 line guide" : ""}
               </span>
               <CopyButton text={output} label={`Copy ${fileName[target]}`} />
               <button
                 type="button"
                 onClick={download}
-                className="rounded-[3px] border border-ink bg-ink px-2.5 py-1 text-sm font-medium text-paper transition-opacity hover:opacity-85"
+                className="rounded-md bg-cursor px-2.5 py-1 font-mono text-xs font-semibold text-cursor-ink transition-opacity hover:opacity-90"
               >
                 Download
               </button>
             </span>
           </div>
-          <pre className="max-h-[70vh] overflow-auto p-4 font-code text-[0.8rem] leading-relaxed whitespace-pre-wrap">
+          <pre className="max-h-[70vh] overflow-auto p-4 font-mono text-[0.8rem] leading-relaxed whitespace-pre-wrap">
             {output}
           </pre>
         </div>
         {sharing && (
           <p className="mt-4 text-sm">
             Now switch to{" "}
-            <button type="button" onClick={() => setTarget("agents")} className="font-medium text-line underline underline-offset-2">
+            <button type="button" onClick={() => setTarget("agents")} className="font-medium text-kw underline underline-offset-2">
               AGENTS.md
             </button>{" "}
             to build the shared rules, and commit both files at the repo root.
           </p>
         )}
-        <p className="mt-4 text-sm text-muted">
-          Place it at the repo root. Lines inside <code className="font-code">{"<!-- -->"}</code> are stripped before Claude Code reads the file, so the reminders cost nothing.
+        <p className="mt-4 text-sm text-comment">
+          Place it at the repo root. Lines inside <code className="font-mono">{"<!-- -->"}</code> are stripped before Claude Code reads the file, so the reminders cost nothing.
         </p>
       </div>
     </div>

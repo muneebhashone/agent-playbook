@@ -27,7 +27,7 @@ export function CopyButton({
     <button
       type="button"
       onClick={copy}
-      className={`rounded-[3px] border border-rule bg-sheet px-2.5 py-1 text-sm font-medium text-ink transition-colors hover:border-line hover:text-line ${className}`}
+      className={`rounded-md border border-rule px-2.5 py-1 font-mono text-xs text-comment transition-colors hover:border-kw hover:text-kw ${className}`}
       aria-live="polite"
     >
       {state === "copied" ? "Copied" : state === "failed" ? "Copy blocked by browser" : label}
