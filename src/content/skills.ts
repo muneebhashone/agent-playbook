@@ -11,20 +11,16 @@ export type SkillPack = {
 };
 
 // Opt-in only: nothing here is installed unless it's ticked in the setup prompt.
+// One workflow pack on purpose. Superpowers, Addy Osmani's agent-skills, and Compound Engineering each
+// bring their own plan/TDD/review flow, so installing more than one gives the agent competing triggers
+// for the same job. Superpowers also tells the agent it MUST invoke a skill on a 1% match, which fights
+// this playbook's narrow-trigger, soft-language rules. Ponytail stays: it adds a constraint, not a flow.
 export const skillPacks: SkillPack[] = [
-  {
-    id: "superpowers",
-    name: "Superpowers",
-    repo: "https://github.com/obra/superpowers",
-    about: "A full development method: brainstorm, plan, TDD, debug systematically, review.",
-    claude: ["claude plugin install superpowers@claude-plugins-official --scope project"],
-    codex: ["codex plugin add superpowers@openai-curated-remote"],
-  },
   {
     id: "mattpocock",
     name: "Matt Pocock's skills",
     repo: "https://github.com/mattpocock/skills",
-    about: "Skills for real engineers: issues, PRDs, TDD, refactoring, and codebase design.",
+    about: "Small skills you call yourself: PRDs, issues, TDD, refactoring, codebase design.",
     claude: ["claude plugin install mattpocock-skills@claude-plugins-official --scope project"],
     codex: ["codex plugin add mattpocock-skills@openai-curated-remote"],
     afterInstall: {
@@ -45,30 +41,5 @@ export const skillPacks: SkillPack[] = [
     afterInstall: {
       codex: "In Codex, open /hooks, review and trust Ponytail's two lifecycle hooks, then start a new thread.",
     },
-  },
-  {
-    id: "agent-skills",
-    name: "Addy Osmani's agent skills",
-    repo: "https://github.com/addyosmani/agent-skills",
-    about: "Production engineering skills: specs, TDD, code review, performance, and shipping.",
-    claude: [
-      "claude plugin marketplace add addyosmani/agent-skills --scope project",
-      "claude plugin install agent-skills@addy-agent-skills --scope project",
-    ],
-    codex: ["codex plugin marketplace add addyosmani/agent-skills", "codex plugin add agent-skills@agent-skills"],
-  },
-  {
-    id: "compound-engineering",
-    name: "Compound Engineering",
-    repo: "https://github.com/EveryInc/compound-engineering-plugin",
-    about: "Plan, work, review, then record what was learned so each run makes the next one easier.",
-    claude: [
-      "claude plugin marketplace add EveryInc/compound-engineering-plugin --scope project",
-      "claude plugin install compound-engineering@compound-engineering-plugin --scope project",
-    ],
-    codex: [
-      "codex plugin marketplace add EveryInc/compound-engineering-plugin",
-      "codex plugin add compound-engineering@compound-engineering-plugin",
-    ],
   },
 ];
