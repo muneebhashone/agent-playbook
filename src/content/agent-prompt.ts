@@ -46,6 +46,19 @@ export const promptTargets: { id: PromptTarget; label: string; note: string }[] 
   { id: "both", label: "Both", note: "AGENTS.md, plus a CLAUDE.md that imports it" },
 ];
 
+/**
+ * The setup run fetches, reads, runs checks, and writes without stopping, so it's meant to run
+ * with permission prompts off. `codex --yolo` is a hidden alias for --dangerously-bypass-approvals-and-sandbox.
+ */
+export const launchCommands: Record<PromptTarget, { cmd: string; mode: string }[]> = {
+  claude: [{ cmd: "claude --permission-mode bypassPermissions", mode: "bypassPermissions" }],
+  codex: [{ cmd: "codex --yolo", mode: "yolo mode" }],
+  both: [
+    { cmd: "claude --permission-mode bypassPermissions", mode: "bypassPermissions" },
+    { cmd: "codex --yolo", mode: "yolo mode" },
+  ],
+};
+
 function ruleLibrary(target: Target): string {
   return ruleGroups
     .map((g) => {

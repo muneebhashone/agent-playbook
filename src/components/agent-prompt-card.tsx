@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { buildShortPrompt, promptTargets, setupUrl, skillsUrl, type PromptTarget } from "@/content/agent-prompt";
+import { buildShortPrompt, launchCommands, promptTargets, setupUrl, skillsUrl, type PromptTarget } from "@/content/agent-prompt";
 import { skillPacks } from "@/content/skills";
+import { CopyButton } from "./copy-button";
 
 export function AgentPromptCard({ siteUrl, version }: { siteUrl: string; version: string }) {
   const [target, setTarget] = useState<PromptTarget>("claude");
@@ -55,6 +56,23 @@ export function AgentPromptCard({ siteUrl, version }: { siteUrl: string; version
             </span>
           ))}
       </pre>
+
+      <div className="space-y-2 border-t border-rule px-4 py-3 sm:px-5">
+        <p className="text-[0.8rem] text-comment">
+          Start the agent with permission prompts off, then paste the prompt. The setup run reads, checks, and writes
+          without stopping to ask.
+        </p>
+        {launchCommands[target].map((l) => (
+          <div key={l.cmd} className="flex items-center gap-3">
+            <code className="min-w-0 flex-1 font-mono text-[0.8rem] break-words">
+              <span aria-hidden className="text-comment select-none">{"$ "}</span>
+              {l.cmd}
+            </code>
+            <span className="hidden font-mono text-[0.75rem] text-comment sm:inline">{l.mode}</span>
+            <CopyButton text={l.cmd} className="shrink-0" />
+          </div>
+        ))}
+      </div>
 
       <div className="flex flex-col gap-3 border-t border-rule px-4 py-3 sm:flex-row sm:items-center sm:px-5">
         <fieldset className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.8rem]">
