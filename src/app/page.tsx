@@ -43,7 +43,7 @@ export default function Home() {
           </h1>
           <p className="mt-4 max-w-[60ch] text-comment">
             It reads your repo and writes a short CLAUDE.md or AGENTS.md using what OpenAI and Anthropic published about
-            directing Codex and Claude Code.
+            directing Codex, Claude Code, and Pi.
           </p>
           <div className="mt-8">
             <AgentPromptCard siteUrl={SITE_URL} version={PLAYBOOK_VERSION} />

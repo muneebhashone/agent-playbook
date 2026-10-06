@@ -2,11 +2,12 @@ import { ruleGroups, type Target } from "./rules";
 import { PLAYBOOK_VERSION } from "./site";
 import { skillPacks } from "./skills";
 
-export type PromptTarget = "claude" | "codex" | "both";
+export type PromptTarget = "claude" | "codex" | "pi" | "both";
 
 export const setupFiles: Record<PromptTarget, string> = {
   claude: "claude.md",
   codex: "codex.md",
+  pi: "pi.md",
   both: "both.md",
 };
 
@@ -23,12 +24,14 @@ export function skillsUrl(siteUrl: string): string {
 const writtenFile: Record<PromptTarget, string> = {
   claude: "CLAUDE.md",
   codex: "AGENTS.md",
+  pi: "AGENTS.md",
   both: "AGENTS.md and CLAUDE.md",
 };
 
 const agentName: Record<PromptTarget, string> = {
   claude: "Claude Code",
   codex: "Codex",
+  pi: "Pi",
   both: "Claude Code and Codex",
 };
 
@@ -43,6 +46,7 @@ export function buildShortPrompt(siteUrl: string, target: PromptTarget, skillIds
 export const promptTargets: { id: PromptTarget; label: string; note: string }[] = [
   { id: "claude", label: "Claude Code", note: "Writes CLAUDE.md" },
   { id: "codex", label: "Codex", note: "Writes AGENTS.md" },
+  { id: "pi", label: "Pi", note: "Writes AGENTS.md" },
   { id: "both", label: "Both", note: "AGENTS.md, plus a CLAUDE.md that imports it" },
 ];
 
@@ -53,6 +57,7 @@ export const promptTargets: { id: PromptTarget; label: string; note: string }[] 
 export const launchCommands: Record<PromptTarget, { cmd: string; mode: string }[]> = {
   claude: [{ cmd: "claude --permission-mode bypassPermissions", mode: "bypassPermissions" }],
   codex: [{ cmd: "codex --yolo", mode: "yolo mode" }],
+  pi: [{ cmd: "pi", mode: "no per-call approval" }],
   both: [
     { cmd: "claude --permission-mode bypassPermissions", mode: "bypassPermissions" },
     { cmd: "codex --yolo", mode: "yolo mode" },
@@ -71,6 +76,7 @@ function ruleLibrary(target: Target): string {
 const fileLine: Record<PromptTarget, string> = {
   claude: "Write a CLAUDE.md at the repository root for Claude Code.",
   codex: "Write an AGENTS.md at the repository root for Codex.",
+  pi: "Write an AGENTS.md at the repository root for Pi.",
   both: "Write an AGENTS.md at the repository root that Codex and Claude Code will share, and a CLAUDE.md next to it whose first line is `@AGENTS.md` (Claude Code ignores AGENTS.md when a CLAUDE.md exists, so the import keeps one source of truth). Put only Claude Code-specific notes below the import, or nothing.",
 };
 
@@ -136,6 +142,8 @@ export function buildSkillsDoc(): string {
         block("Claude Code", p.claude, p.afterInstall?.claude),
         "",
         block("Codex", p.codex, p.afterInstall?.codex),
+        "",
+        block("Pi", p.pi, p.afterInstall?.pi),
       ].join("\n");
     })
     .join("\n\n");
@@ -144,8 +152,8 @@ export function buildSkillsDoc(): string {
 
 I opted into some of the skill packs below; my prompt names them by id and says which agent to install them for. Install only those. Don't install anything else, even if it looks useful.
 
-- Run the commands for each named pack exactly as written, in order, from the repository root. Claude Code installs use project scope, so they write to \`.claude/settings.json\`; that change is expected. Codex installs are user-level.
-- If a command fails, don't try another source or a copied install script. Report the error and tell me the in-app fallback: \`/plugin install <name>\` in Claude Code, or \`/plugins\` and search in Codex.
+- Run the commands for each named pack exactly as written, in order, from the repository root. Installs may write project files such as \`.claude/\`, \`.pi/\`, and \`.codex/\`, or user-level skills in \`~/.agents/skills\`; those changes are expected.
+- If a command fails, don't try another source or a copied install script. Report the error and tell me the in-app fallback: \`/plugin install <name>\` in Claude Code, \`/plugins\` in Codex, or a restart then \`/skill:<name>\` in Pi.
 - Plugins load when a session starts, so tell me to restart the agent after installing.
 - Report what you installed under **Changed**, and each "Then, for me" step plus the restart under **Blocked on me**.
 

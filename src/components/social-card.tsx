@@ -81,7 +81,7 @@ export async function renderSocialCard() {
             <div style={{ width: 15, height: 32, marginLeft: 10, background: c.cursor }} />
           </div>
           <div style={{ display: "flex", color: c.comment, fontSize: 24 }}>
-            # For Claude Code and Codex. Built from 15 official guides.
+            # For Claude Code, Codex, and Pi. Built from 15 official guides.
           </div>
         </div>
       </div>

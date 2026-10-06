@@ -6,4 +6,4 @@ export const SITE_URL = "https://playbook.themuneebh.com";
 
 export const SITE_TITLE = "Agent Playbook";
 export const SITE_DESCRIPTION =
-  "One line for Claude Code or Codex that writes your CLAUDE.md or AGENTS.md, distilled from 15 guides by OpenAI and Anthropic.";
+  "One line for Claude Code, Codex, or Pi that writes your CLAUDE.md or AGENTS.md, distilled from 15 guides by OpenAI and Anthropic.";
